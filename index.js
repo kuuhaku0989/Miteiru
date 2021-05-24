@@ -43,7 +43,6 @@ yt.on('error', error => {
 
 
 // TODO:
-// + implement Stream Notifications
 // + auto start/stop for LiveTL
 // + reformat variable into config for expandability
 // + introduce weighted gacha (SSR YAGOO)
@@ -344,6 +343,72 @@ client.on('message', message => {
 
 		timestampsbeam.set(message.author.id, now);
 		setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+		break;
+	}
+
+	case 'rrat': {
+
+		if (!cooldowns.has('rrat')) {
+			cooldowns.set('rrat', new Discord.Collection());
+		}
+
+		const timestampsbeam = cooldowns.get('rrat');
+
+		if (timestampsbeam.has(message.author.id)) {
+			const expirationTime = timestampsbeam.get(message.author.id) + (10800 || 3) * 1000;
+			if (now < expirationTime) {
+				return;
+			}
+		}
+
+		let target = null;
+
+		if (!(message.reference == null || message.channel.messages.cache.get(message.reference.messageID) == null)) {
+			target = message.channel.messages.cache.get(message.reference.messageID).author;
+		}
+
+		if (message.mentions.users.size > 0) {
+			target = message.mentions.users.first();
+		}
+
+
+		if (target != null) {
+
+
+			// eslint-disable-next-line no-control-regex
+			let name = target.username.replace(/[^0-9A-Za-z_]/g, '');
+			if(name === '') {
+				name = 'target';
+			}
+
+			client.guilds.fetch('838752639219007498').then((home) => {
+				home.emojis.create(target.avatarURL(), name).then((emote) => {
+					message.channel.send('<:Gutter:846081431934599238><:blank:839598445567672330><:blank:839598445567672330>' + emote.toString() + '🧹')
+						.then((msg)=> {
+
+							setTimeout(function() {
+								msg.edit('<:Gutter:846081431934599238><:blank:839598445567672330>' + emote.toString() + '🧹');
+							}, 2000);
+
+							setTimeout(function() {
+								msg.edit('<:Gutter:846081431934599238>' + emote.toString() + '🧹');
+							}, 3000);
+
+							setTimeout(function() {
+								msg.edit('<:GutterFubukiStuck:786142064273260555>' + '🧹');
+							}, 4000);
+
+							setTimeout(function() {
+								msg.edit('<:GutterFubuki:726717655104487547>');
+							}, 6000);
+						});
+					setTimeout(function() {emote.delete();}, 20000);
+				});
+			});
+			timestampsbeam.set(message.author.id, now);
+			setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+		}
+
 		break;
 	}
 
