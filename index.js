@@ -29,6 +29,10 @@ yt.on('ready', () => {
 yt.on('message', data => {
 	if(data.snippet.authorChannelId === 'UCRwHhvTMPawgJhb5Fy934WQ' && data.snippet.displayMessage.startsWith('[英訳/EN]')) {
 		chatChannel.send(data.snippet.displayMessage.slice(7).trim());
+
+		fs.appendFile(yt.liveId + '.txt', data.snippet.publishedAt.slice(11, 19) + '\t' + data.snippet.displayMessage.slice(7).trim() + '\n', function(err) {
+			if (err) throw err;
+		});
 	}
 });
 
@@ -274,8 +278,8 @@ client.on('message', message => {
 
 			// eslint-disable-next-line no-control-regex
 			let name = target.username.replace(/[^0-9A-Za-z_]/g, '');
-			if(name === '') {
-				name = 'target';
+			if(name.length() < 2) {
+				name += '__';
 			}
 
 			client.guilds.fetch('678259497193570304').then((home) => {
@@ -341,8 +345,10 @@ client.on('message', message => {
 				});
 		}
 
-		timestampsbeam.set(message.author.id, now);
-		setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+		if(message.author.id !== '312656627067125761') {
+			timestampsbeam.set(message.author.id, now);
+			setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+		}
 		break;
 	}
 
@@ -377,8 +383,8 @@ client.on('message', message => {
 
 			// eslint-disable-next-line no-control-regex
 			let name = target.username.replace(/[^0-9A-Za-z_]/g, '');
-			if(name === '') {
-				name = 'target';
+			if(name.length() < 2) {
+				name += '__';
 			}
 
 			client.guilds.fetch('838752639219007498').then((home) => {
@@ -405,8 +411,10 @@ client.on('message', message => {
 					setTimeout(function() {emote.delete();}, 20000);
 				});
 			});
-			timestampsbeam.set(message.author.id, now);
-			setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+			if(message.author.id !== '312656627067125761') {
+				timestampsbeam.set(message.author.id, now);
+				setTimeout(() => timestampsbeam.delete(message.author.id), (10800 || 3) * 1000);
+			}
 		}
 
 		break;
@@ -522,7 +530,7 @@ client.on('message', message => {
 				});
 			}
 			else {
-				message.channel.send('currently watching any livestream');
+				message.channel.send('currently not watching any livestream');
 			}
 		}
 		break;
