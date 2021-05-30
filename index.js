@@ -30,7 +30,7 @@ yt.on('message', data => {
 	if(data.snippet.authorChannelId === 'UCRwHhvTMPawgJhb5Fy934WQ' && data.snippet.displayMessage.startsWith('[英訳/EN]')) {
 		chatChannel.send(data.snippet.displayMessage.slice(7).trim());
 
-		fs.appendFile(yt.liveId + '.txt', data.snippet.publishedAt.slice(11, 19) + '\t' + data.snippet.displayMessage.slice(7).trim() + '\n', function(err) {
+		fs.appendFile('Transcripts/' + yt.liveId + '.txt', data.snippet.publishedAt.slice(11, 19) + '\t' + data.snippet.displayMessage.slice(7).trim() + '\n', function(err) {
 			if (err) throw err;
 		});
 	}
