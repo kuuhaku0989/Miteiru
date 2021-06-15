@@ -14,11 +14,10 @@ let listening = false;
 
 let chatChannel = null;
 
-const delay = 4000;
+const delay = 8000;
 
 
 // UC7YXqPO3eUnxbJ6rN0z2z1Q
-// Des: UCRwHhvTMPawgJhb5Fy934WQ
 // Self: UCOU2Ok2G7ZfQp2RSbT97Mqg
 
 
@@ -27,8 +26,8 @@ yt.on('ready', () => {
 });
 
 yt.on('message', data => {
-	if(data.snippet.authorChannelId === 'UCRwHhvTMPawgJhb5Fy934WQ' && data.snippet.displayMessage.startsWith('[英訳/EN]')) {
-		chatChannel.send(data.snippet.displayMessage.slice(7).trim());
+	if(data.snippet.authorChannelId === '' && data.snippet.displayMessage.startsWith('[英訳/EN]')) {
+		chatChannel.send('``` ' + data.snippet.displayMessage.slice(7).trim().replace(/[|]/g, '\n') + '```');
 
 		fs.appendFile('Transcripts/' + yt.liveId + '.txt', data.snippet.publishedAt.slice(11, 19) + '\t' + data.snippet.displayMessage.slice(7).trim() + '\n', function(err) {
 			if (err) throw err;
@@ -38,11 +37,16 @@ yt.on('message', data => {
 
 yt.on('error', error => {
 	console.error(error);
-	if(error.message === 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.') {
+	if(error === 'Can not find live.') {
+		chatChannel.send('No ongoing livestream on this channel');
+		yt.stop();
+		listening = false;
+	}
+	/* if(error.message === 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.') {
 		config.apiKeyNr = (config.apiKeyNr + 1) % config.apiKeys.length;
 		yt.key = config.apiKeys[config.apiKeyNr];
 		saveConfig();
-	}
+	}*/
 });
 
 
@@ -278,7 +282,7 @@ client.on('message', message => {
 
 			// eslint-disable-next-line no-control-regex
 			let name = target.username.replace(/[^0-9A-Za-z_]/g, '');
-			if(name.length() < 2) {
+			if(name.length < 2) {
 				name += '__';
 			}
 
@@ -383,7 +387,7 @@ client.on('message', message => {
 
 			// eslint-disable-next-line no-control-regex
 			let name = target.username.replace(/[^0-9A-Za-z_]/g, '');
-			if(name.length() < 2) {
+			if(name.length < 2) {
 				name += '__';
 			}
 
